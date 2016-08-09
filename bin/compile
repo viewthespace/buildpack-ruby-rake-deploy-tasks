@@ -24,4 +24,36 @@ if [ -z "$DEPLOY_TASKS" ]; then
   exit 0
 fi
 
-cd $build_dir && bundle exec rake $DEPLOY_TASKS
+cd $build_dir
+
+export RUBY_PATH=`readlink --canonicalize $build_dir/vendor/ruby-*`
+export BUNDLE_PATH=`readlink --canonicalize $build_dir/vendor/bundle/ruby/*`
+
+export PATH=$RUBY_PATH/bin:$BUNDLE_PATH/bin:$PATH
+export GEM_PATH=$BUNDLE_PATH
+
+echo "====================="
+
+echo "THE RUBY_PATH is $RUBY_PATH"
+echo "THE BUNDLE_PATH is $BUNDLE_PATH"
+echo "THE GEM_PATH is $GEM_PATH"
+echo "THE PATH is $PATH"
+
+echo "====================="
+
+echo "===ruby info==="
+which ruby
+ruby -v
+
+echo "===bundle info==="
+which bundle
+bundle -v
+
+echo "===rake info==="
+which rake
+rake -V
+
+echo "====================="
+
+echo "going to execute: $RUBY_PATH/bin/ruby $BUNDLE_PATH/bin/bundle exec $BUNDLE_PATH/bin/rake $DEPLOY_TASKS"
+$RUBY_PATH/bin/ruby $BUNDLE_PATH/bin/bundle exec $BUNDLE_PATH/bin/rake $DEPLOY_TASKS
